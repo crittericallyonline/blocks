@@ -6,8 +6,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-double width, height;
+#include "shader.h"
 
+double width, height;
+GLuint global_program;
 
 bool onMouseMove(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
     // printf("(%d, %d)\n", mouseEvent->clientX, mouseEvent->clientY);
@@ -21,20 +23,17 @@ bool RESIZE_CALLBACK(int eventType, const EmscriptenUiEvent *uiEvent, void *user
     return true;
 }
 
-void update()
-{
-    
-}
-
 void draw()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    double now = emscripten_performance_now();
+    glClearColor(sin(now / 500.0) / 2 + 0.5f, cos(now / 500.0) / 2 + 0.5f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glfwPollEvents();
+    glFlush();
 }
 
 void renderLoop()
 {
-    update();
     draw();
 }
 
@@ -48,8 +47,8 @@ int main()
 
     EmscriptenWebGLContextAttributes attrs;
     
-    attrs.majorVersion = 3;
-    attrs.minorVersion = 2;
+    attrs.majorVersion = 2;
+    attrs.minorVersion = 3;
 
     emscripten_webgl_init_context_attributes(&attrs);
     
@@ -62,10 +61,10 @@ int main()
         printf("error setting the webgl context to current\n");
         return -1;
     }
+    global_program = gen_program("/shader/vertex.glsl", "/shader/fragment.glsl");
     
     emscripten_set_mousemove_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, onMouseMove);
     emscripten_get_element_css_size("#canvas", &width, &height);
-    printf("%f, %f\n", width, height);
     emscripten_set_resize_callback("#canvas", NULL, true, RESIZE_CALLBACK);
 
     emscripten_set_main_loop(renderLoop, 0, true);
