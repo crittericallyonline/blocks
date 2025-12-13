@@ -6,10 +6,23 @@
 #include <stdlib.h>
 #include <math.h>
 
+// :3 - Willow
+
 #include "shader.h"
 
 double width, height;
-GLuint global_program;
+
+struct Program {
+    GLuint shaderProgram;
+} Program;
+
+struct Camera {
+    float transform[4 * 4];
+    float rotation[3];
+    float position[3];
+    float fieldOfView;
+    float nearPlane, farPlane; // define for later use in rendering
+} Camera;
 
 bool onMouseMove(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
     // printf("(%d, %d)\n", mouseEvent->clientX, mouseEvent->clientY);
@@ -32,13 +45,23 @@ void draw()
     glFlush();
 }
 
+void updateCamera()
+{
+    
+}
+
 void renderLoop()
 {
+    updateCamera();
     draw();
 }
 
 int main()
 {
+    Camera.nearPlane = 0.1;
+    Camera.farPlane = 1000;
+    Camera.position[2] = 5; // backwards
+
     if(!glfwInit())
     {
         printf("Error with creating the webgl context.\n");
@@ -66,7 +89,8 @@ int main()
     emscripten_get_element_css_size("#canvas", &width, &height);
     emscripten_set_resize_callback("#canvas", NULL, true, RESIZE_CALLBACK);
 
-    global_program = gen_program("/shader/vertex.vs", "/shader/fragment.fs");
+
+    Program.shaderProgram = gen_program("/shader/vertex.vs", "/shader/fragment.fs");
     
     emscripten_set_main_loop(renderLoop, 0, true);
 
