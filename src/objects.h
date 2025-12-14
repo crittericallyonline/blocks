@@ -8,7 +8,7 @@
 
 typedef struct Object
 {
-    GLuint VAB, EAB;
+    GLuint VAO, VAB, EAB;
     uint32_t vert_count;
     float *vertices;
     uint32_t *indicies;
@@ -18,9 +18,9 @@ Object *create_triangle()
 {
 
     float vertices[] = {
-        0, 0.5, 0,
-        0.5, -0.5, 0,
-        -0.5, -0.5, 0
+        0, 0.500, 0,
+        0.500, -0.500, 0,
+        -0.500, -0.500, 0
     };
 
     unsigned int indices[] = {
@@ -28,18 +28,13 @@ Object *create_triangle()
     };
 
     GLuint buffer1;
-    GLuint buffer2;
-    glGenBuffers(1, &buffer1);
-    glGenBuffers(1, &buffer2);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer1);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 3, vertices, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3, indices, GL_STATIC_DRAW);
+    glGenVertexArrays(1, &buffer1);
+    glBindVertexArray(buffer1);
+    glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), vertices, GL_STATIC_DRAW);
+
     Object *model = (Object *) malloc(sizeof(Object));
 
     model->VAB = buffer1;
-    model->EAB = buffer2;
-
     model->vert_count = 3;
     model->vertices = vertices;
     model->indicies = indices;
@@ -49,6 +44,9 @@ Object *create_triangle()
 
 void drawModel(Object *model)
 {
+    glEnableVertexAttribArray(Program.vertex_position);
     glVertexAttribPointer(Program.vertex_position, 3, GL_FLOAT, false, 0, model->vertices);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindBuffer(GL_ARRAY_BUFFER, model->VAB);
+    glDrawArrays(GL_TRIANGLES, 0, 3 * sizeof(float));
+    glDisableVertexAttribArray(Program.vertex_position);
 }

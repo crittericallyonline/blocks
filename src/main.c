@@ -39,13 +39,11 @@ struct Camera {
 const double mouse_sens = 1.0f/45.0f;
 
 bool onMouseMove(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
-    // printf("(%d, %d)\n", mouseEvent->clientX, mouseEvent->clientY);
     switch (eventType)
     {
     case EMSCRIPTEN_EVENT_MOUSEMOVE:
         Camera.rotation[0] += mouse_sens * mouseEvent->movementY;
         Camera.rotation[1] += mouse_sens * mouseEvent->movementX;
-        // printf("%f, %f\n", Camera.rotation[0], Camera.rotation[1]);
         break;
     
     default:
@@ -97,21 +95,19 @@ void draw()
 
     // i think this is all we do here, but before polling we must render stuff
 
+    glm_translate(Camera.transformation, Camera.position);
     
     // Like three.Orientation().order = "YXZ" for proper camera rotation and movement, i think thats correct.
-    // glm_rotate_y(Camera.transformation, Camera.rotation[1], inverse_matrix);
-    // glm_rotate_x(Camera.transformation, Camera.rotation[0], inverse_matrix);
-    // glm_rotate_z(Camera.transformation, Camera.rotation[2], inverse_matrix);
+    glm_rotate_y(Camera.transformation, Camera.rotation[1], inverse_matrix);
+    glm_rotate_x(Camera.transformation, Camera.rotation[0], inverse_matrix);
+    glm_rotate_z(Camera.transformation, Camera.rotation[2], inverse_matrix);
     
-    glm_translate(Camera.transformation, Camera.position);
-    // glm_mat4_inv(Camera.transformation, inverse_matrix);
+    drawModel(triangle);
 
+    glm_mat4_inv(Camera.transformation, inverse_matrix);
 
     glUniformMatrix4fv(Program.projection_matrix, 1, GL_FALSE, Camera.projection[0]);
     glUniformMatrix4fv(Program.modelview_matrix, 1, GL_FALSE, inverse_matrix[0]);
-
-
-    drawModel(triangle);
 
     glfwPollEvents();
     glFlush();
@@ -193,7 +189,6 @@ int main()
     Program.modelview_matrix = glGetUniformLocation(Program.shaderProgram, "modelview_matrix");
     Program.projection_matrix = glGetUniformLocation(Program.shaderProgram, "projection_matrix");
     Program.vertex_position = glGetAttribLocation(Program.shaderProgram, "vertex_position");
-    glEnableVertexAttribArray(Program.vertex_position);
 
     emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);
     emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);
