@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include "program.h"
 
-// #define STB_IMAGE_IMPLEMENTATION
-// #include "stb_image.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 typedef struct Object
 {
@@ -24,8 +24,8 @@ GLuint generate_checker()
     glBindTexture(GL_TEXTURE_2D, image);
     // Black/white checkerboard
     float pixels[] = {
-        0.0f, 0.0f, 0.0f,   1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,   0.0f, 0.0f, 0.0f
+        0.0f, 0.0f, 0.0f,   1.0f, 0.0f, 1.0f,
+        1.0f, 0.0f, 1.0f,   0.0f, 0.0f, 0.0f
     };
 
     // now for binding data to the buffer
@@ -39,7 +39,37 @@ GLuint generate_checker()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     return image;
+}
+
+GLuint load_image(const char *imagePath)
+{
+    GLuint image;
+    glGenTextures(1, &image);
+    glBindTexture(GL_TEXTURE_2D, image);
+    int w, h, c;
+
+    unsigned char *imageData = stbi_load(imagePath, &w, &h, &c, STBI_rgb_alpha);
+    if(!imageData)
+    {
+        glDeleteTextures(1, &image);
+        return 0;
+    }
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    if(c == 3)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, imageData);
+    else if(c == 4)
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
     
+    free(imageData);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    
+    return image;
 }
 
 Object *create_cube()
@@ -47,15 +77,21 @@ Object *create_cube()
 
     GLfloat vertices[] = {
       //X  Y  Z  U  V
-        0.0, 0.0, 0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0, 0.0, 1.0,
-        1.0, 1.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 0.5, 0.0, 0.0,
+        1.0, 0.0, 0.5, 1.0, 0.0,
+        0.0, 1.0, 0.5, 0.0, 1.0,
+        1.0, 1.0, 0.5, 1.0, 1.0,
+        0.0, 0.0, -.5, 0.0, 0.0,
+        0.0, 1.0, -.5, 1.0, 0.0,
+        1.0, 0.0, -.5, 0.0, 1.0,
+        1.0, 1.0, -.5, 1.0, 1.0,
     };
 
     GLuint indices[] = {
         0, 1, 2,
         2, 1, 3,
+        4, 5, 6,
+        6, 5, 7
     };
 
     GLuint array, vertBuffer, indexBuffer, uvBuffer;
@@ -91,14 +127,11 @@ Object *create_cube()
     Object *model = (Object *) malloc(sizeof(Object));
 
     model->VAO = array;
-
     model->buffers[0] = vertBuffer;
     model->buffers[1] = indexBuffer;
     model->buffers[2] = uvBuffer;
-
     model->index_count = sizeof(indices) / 4;
-
-    model->textureID = generate_checker();
+    model->textureID = load_image("/tex/blocks.png");
 
     return model;
 }

@@ -15,5 +15,5 @@ varying vec2 TexCoord;
 void main()
 {
     gl_Position = projection_matrix * modelview_matrix * vec4(vertex_position, 1.0);
-    TexCoord = texcoord;
+    TexCoord = vec2(texcoord.x, 1.0 - texcoord.y);
 }

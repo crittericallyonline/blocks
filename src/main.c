@@ -247,6 +247,8 @@ int main()
     glCullFace(GL_BACK);
 
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glEnable(GL_CULL_FACE);
 
     glClearColor(135.0f / 255.0f, 206.0f / 255.0f, 235.0f / 255.0f, 1.0f);
@@ -259,9 +261,6 @@ int main()
     Program.projection_matrix = glGetUniformLocation(Program.shaderProgram, "projection_matrix");
     Program.vertex_position = glGetAttribLocation(Program.shaderProgram, "vertex_position");
     Program.texcoord = glGetAttribLocation(Program.shaderProgram, "texcoord");
-    // Program.sampler0 = glGetAttribLocation(Program.shaderProgram, "sampler0");
-
-    // printf("%i\n", Program.texcoord);
 
     cube = create_cube();
 
