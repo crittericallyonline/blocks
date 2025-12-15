@@ -16,10 +16,16 @@
 
 #define PI 3.141592653589
 
+#ifndef clamp
+#define clamp(v, min, max) ((v) > (max) ? (max) : ((v) < (min) ? (min) : (v)))
+#endif
+#ifndef loop
+#define loop(v, min, max) ((v) > (max) ? (min) : ((v) < (min) ? (max) : (v)))
+#endif
+
 // special thanks to -> Malicious chromosoze
 
 Object *cube;
-
 struct Camera {
     // transformations
     vec3 last_position;
@@ -42,8 +48,6 @@ struct Camera {
     float nearPlane, farPlane; // define for later use in rendering
 } Camera;
 
-#define clamp(v, min, max) ((v) > (max) ? (max) : ((v) < (min) ? (min) : (v)))
-
 bool MOUSE_CALLBACK(int eventType, const EmscriptenMouseEvent *mouseEvent, void *userData) {
     switch (eventType)
     {
@@ -52,6 +56,7 @@ bool MOUSE_CALLBACK(int eventType, const EmscriptenMouseEvent *mouseEvent, void 
         Camera.rotation[1] += mouseEvent->movementX / 250.0f;
 
         Camera.rotation[0] = clamp(Camera.rotation[0], -PI/2.f, PI/2.f);
+        Camera.rotation[0] = loop(Camera.rotation[0], -PI/2.f, PI/2.f);
         
         return true;
         break;
