@@ -63,6 +63,8 @@ bool MOUSE_CALLBACK(int eventType, const EmscriptenMouseEvent *mouseEvent, void 
 
 bool RESIZE_CALLBACK(int eventType, const EmscriptenUiEvent *uiEvent, void *userData)
 {
+    emscripten_set_canvas_element_size("#canvas", uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
+    glViewport(0, 0, uiEvent->windowInnerWidth, uiEvent->windowInnerHeight);
     glm_perspective((Camera.fieldOfView / 180.0f) * PI, (float) uiEvent->windowInnerWidth / (float) uiEvent->windowInnerHeight, 0.1f, 1000.0f, Camera.projection);
     return true;
 }
@@ -259,6 +261,8 @@ int main()
     emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);
 
     
+    emscripten_set_canvas_element_size("#canvas", (int) width, (int) height);
+    glViewport(0, 0, (int) width, (int) height);
 
     cube = create_cube();
 
