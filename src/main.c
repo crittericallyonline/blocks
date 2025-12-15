@@ -248,7 +248,7 @@ int main()
 
     glEnable(GL_BLEND);
     glEnable(GL_CULL_FACE);
-    
+
     glClearColor(135.0f / 255.0f, 206.0f / 255.0f, 235.0f / 255.0f, 1.0f);
 
     emscripten_set_mousemove_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, MOUSE_CALLBACK);
@@ -258,6 +258,12 @@ int main()
     Program.modelview_matrix = glGetUniformLocation(Program.shaderProgram, "modelview_matrix");
     Program.projection_matrix = glGetUniformLocation(Program.shaderProgram, "projection_matrix");
     Program.vertex_position = glGetAttribLocation(Program.shaderProgram, "vertex_position");
+    Program.texcoord = glGetAttribLocation(Program.shaderProgram, "texcoord");
+    // Program.sampler0 = glGetAttribLocation(Program.shaderProgram, "sampler0");
+
+    // printf("%i\n", Program.texcoord);
+
+    cube = create_cube();
 
     emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);
     emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);
@@ -266,7 +272,6 @@ int main()
     emscripten_set_canvas_element_size("#canvas", (int) width, (int) height);
     glViewport(0, 0, (int) width, (int) height);
 
-    cube = create_cube();
 
     emscripten_set_main_loop(renderLoop, 0, true);
 

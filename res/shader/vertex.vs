@@ -1,17 +1,19 @@
 #version 100
 
+// id,k
 attribute vec3 vertex_position; 
+attribute vec2 texcoord;
 
+// in
 uniform mat4 projection_matrix;
 uniform mat4 modelview_matrix;
+uniform float time;
 
-
-uniform vec2 texCoord;
+// out
 varying vec2 TexCoord;
 
 void main()
 {
     gl_Position = projection_matrix * modelview_matrix * vec4(vertex_position, 1.0);
-    // gl_Position = vec4(vertex_position, 1.0);
-    TexCoord = vec2(texCoord.x, 1.0-texCoord.y);
+    TexCoord = texcoord;
 }
