@@ -12,11 +12,11 @@ struct Program {
     // Attributes
     GLuint vertex_position;
     GLuint texcoord;
+    GLuint vertex_id;
 
         //FRAGMENT STUFF
     // uniforms
     GLuint sampler0;
-    GLuint color;
 } Program;
 
 #endif//PROGRAM_H

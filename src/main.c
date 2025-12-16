@@ -213,7 +213,7 @@ int main()
     Camera.nearPlane = 0.1;
     Camera.farPlane = 1000;
     Camera.fieldOfView = 70;
-    Camera.position[2] = -5; // backwards
+    Camera.position[2] = -2.5; // backwards
     Camera.playerSpeed = 0.0025;
 
 
@@ -252,10 +252,12 @@ int main()
     }
     glCullFace(GL_BACK);
 
+    // glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_DEPTH_TEST);
 
-    glEnable(GL_CULL_FACE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
 
     glClearColor(135.0f / 255.0f, 206.0f / 255.0f, 235.0f / 255.0f, 1.0f);
 
@@ -268,10 +270,11 @@ int main()
     Program.vertex_position = glGetAttribLocation(Program.shaderProgram, "vertex_position");
     Program.texcoord = glGetAttribLocation(Program.shaderProgram, "texcoord");
     Program.time = glGetUniformLocation(Program.shaderProgram, "iTime");
+    Program.vertex_id = glGetAttribLocation(Program.shaderProgram, "vertex_id");
 
     init_textures();
 
-    cube = create_cube(1);
+    cube = create_cube(3);
 
     emscripten_set_keydown_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);
     emscripten_set_keyup_callback(EMSCRIPTEN_EVENT_TARGET_WINDOW, NULL, true, KEYBOARD_CALLBACK);

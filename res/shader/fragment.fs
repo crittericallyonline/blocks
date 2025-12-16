@@ -5,7 +5,6 @@ precision highp float;
 in vec2 TexCoord;
 
 uniform sampler2D imageTex;
-uniform int iTime;
 uniform vec3 color;
 
 out vec4 diffuseColor;

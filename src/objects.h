@@ -10,19 +10,18 @@ typedef struct Object
     GLuint textureID;
     uint32_t index_count;
     GLuint VAO;
-    GLuint buffers[3]; // vert, 
-    GLuint transform;
+    GLuint buffers[2]; // vert, index
+    mat4 transform;
 } Object;
 
 Object *create_cube(GLuint id)
 {
 
     GLfloat vertices[] = {
-      //X  Y  Z  U  V
-        -.5, -.5, 0.5, 0.0, 0.0,
-        0.5, -.5, 0.5, 1.0, 0.0,
-        -.5, 0.5, 0.5, 0.0, 1.0,
-        0.5, 0.5, 0.5, 1.0, 1.0,
+        0, -.5, -.5, 0.5, 0.0, 0.0,
+        1, 0.5, -.5, 0.5, 1.0, 0.0,
+        2, -.5, 0.5, 0.5, 0.0, 1.0,
+        3, 0.5, 0.5, 0.5, 1.0, 1.0,
     };
 
     GLuint indices[] = {
@@ -30,7 +29,7 @@ Object *create_cube(GLuint id)
         2, 1, 3,
     };
 
-    GLuint array, vertBuffer, indexBuffer, uvBuffer;
+    GLuint array, vertBuffer, indexBuffer;
 
     //https://open.gl/drawing -> **Since only calls after binding a VAO stick to it**, make sure that you've created and bound the VAO at the start of your program. **Any vertex buffers and element buffers bound before it will be [ignored].**
     glGenVertexArrays(1, &array);
@@ -49,11 +48,14 @@ Object *create_cube(GLuint id)
 
     // verts
     glEnableVertexAttribArray(Program.vertex_position);
-    glVertexAttribPointer(Program.vertex_position, 3, GL_FLOAT, false, 5 * sizeof(float), NULL);
+    glVertexAttribPointer(Program.vertex_position, 3, GL_FLOAT, false, 6 * sizeof(GLfloat), (void *)(sizeof(GLfloat)));
 
     // uvs
     glEnableVertexAttribArray(Program.texcoord);
-    glVertexAttribPointer(Program.texcoord, 2, GL_FLOAT, false, 5 * sizeof(float), NULL);
+    glVertexAttribPointer(Program.texcoord, 2, GL_FLOAT, false, 6 * sizeof(GLfloat), (void *)(sizeof(GLfloat)));
+    
+    // glEnableVertexAttribArray(Program.vertex_id);
+    // glVertexAttribPointer(Program.vertex_id, 1, GL_FLOAT, false, 6 * sizeof(GLfloat), NULL);
     
     glBindVertexArray(0);
     
@@ -64,7 +66,6 @@ Object *create_cube(GLuint id)
     model->VAO = array;
     model->buffers[0] = vertBuffer;
     model->buffers[1] = indexBuffer;
-    model->buffers[2] = uvBuffer;
     model->index_count = sizeof(indices) / 4;
     model->textureID = Textures.index[id];
 
